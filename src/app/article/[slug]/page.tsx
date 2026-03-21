@@ -8,7 +8,7 @@ import { ShareButton } from '@/components/article/ShareButton'
 import { formatDate, getReadTime } from '@/lib/slug'
 import { RELATED_COUNT } from '@/lib/utils'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
 interface Props {
   params: { slug: string }
@@ -45,14 +45,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export async function generateStaticParams() {
-  const articles = await prisma.article.findMany({
-    select: { slug: true },
-    orderBy: { publishedAt: 'desc' },
-    take: 1000,
-  })
-  return articles.map((a) => ({ slug: a.slug }))
-}
 
 function PriorityLabel({ priority }: { priority: number }) {
   const config: Record<number, { label: string; bg: string }> = {

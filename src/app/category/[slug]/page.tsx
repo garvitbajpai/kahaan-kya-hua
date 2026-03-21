@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/Badge'
 import { ARTICLES_PER_PAGE } from '@/lib/utils'
 import { formatDate, getReadTime } from '@/lib/slug'
 
-export const revalidate = 120
+export const dynamic = 'force-dynamic'
 
 interface Props {
   params: { slug: string }
@@ -35,10 +35,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export async function generateStaticParams() {
-  const categories = await prisma.category.findMany({ select: { slug: true } })
-  return categories.map((c) => ({ slug: c.slug }))
-}
 
 export default async function CategoryPage({ params, searchParams }: Props) {
   const category = await getCategory(params.slug)

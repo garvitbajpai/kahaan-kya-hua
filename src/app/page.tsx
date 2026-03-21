@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/Badge'
 import { formatDate, timeAgo, getReadTime } from '@/lib/slug'
 import { HOME_LATEST_COUNT, CATEGORY_PREVIEW_COUNT } from '@/lib/utils'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Kahaan Kya Hua | कहाँ क्या हुआ – ताज़ा खबरें',

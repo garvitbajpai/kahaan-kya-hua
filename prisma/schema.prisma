@@ -3,16 +3,16 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model Category {
   id          Int       @id @default(autoincrement())
-  name        String    @unique
-  slug        String    @unique
-  description String?
-  color       String?
+  name        String    @unique @db.VarChar(255)
+  slug        String    @unique @db.VarChar(255)
+  description String?   @db.Text
+  color       String?   @db.VarChar(50)
   createdAt   DateTime  @default(now())
   articles    Article[]
 
@@ -21,20 +21,20 @@ model Category {
 
 model Article {
   id          Int       @id @default(autoincrement())
-  headline    String
-  slug        String    @unique
-  body        String
+  headline    String    @db.VarChar(500)
+  slug        String    @unique @db.VarChar(600)
+  body        String    @db.LongText
   publishedAt DateTime
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   isBreaking  Boolean   @default(false)
   isFeatured  Boolean   @default(false)
   viewCount   Int       @default(0)
-  language    String    @default("Hindi")
+  language    String    @default("Hindi") @db.VarChar(20)
   priority    Int?
 
   categoryId  Int
-  category    Category  @relation(fields: [categoryId], references: [id])
+  category    Category       @relation(fields: [categoryId], references: [id])
 
   uploadId    Int?
   upload      UploadHistory? @relation(fields: [uploadId], references: [id])
@@ -50,13 +50,13 @@ model Article {
 
 model UploadHistory {
   id           Int       @id @default(autoincrement())
-  filename     String
+  filename     String    @db.VarChar(255)
   uploadedAt   DateTime  @default(now())
   totalRows    Int
   successCount Int
   failureCount Int
-  status       String
-  errorLog     String?
+  status       String    @db.VarChar(50)
+  errorLog     String?   @db.LongText
   articles     Article[]
 
   @@map("upload_history")
