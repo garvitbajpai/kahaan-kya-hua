@@ -22,39 +22,41 @@ function getTodayRange() {
 }
 
 async function getHomeData() {
-  const { start, end } = getTodayRange()
+  try {
+    const { start, end } = getTodayRange()
 
-  const [todayPriority, latest, categories] = await Promise.all([
-    // Today's priority articles (priority 1-4, published today)
-    prisma.article.findMany({
-      where: {
-        priority: { not: null },
-        publishedAt: { gte: start, lte: end },
-      },
-      include: { category: { select: { id: true, name: true, slug: true, color: true } } },
-      orderBy: [{ priority: 'asc' }, { publishedAt: 'desc' }],
-      take: 6,
-    }),
-    // Latest articles overall
-    prisma.article.findMany({
-      include: { category: { select: { id: true, name: true, slug: true, color: true } } },
-      orderBy: { publishedAt: 'desc' },
-      take: HOME_LATEST_COUNT,
-    }),
-    // Categories with their articles
-    prisma.category.findMany({
-      include: {
-        articles: {
-          include: { category: { select: { id: true, name: true, slug: true, color: true } } },
-          orderBy: { publishedAt: 'desc' },
-          take: CATEGORY_PREVIEW_COUNT,
+    const [todayPriority, latest, categories] = await Promise.all([
+      prisma.article.findMany({
+        where: {
+          priority: { not: null },
+          publishedAt: { gte: start, lte: end },
         },
-      },
-      orderBy: { name: 'asc' },
-    }),
-  ])
+        include: { category: { select: { id: true, name: true, slug: true, color: true } } },
+        orderBy: [{ priority: 'asc' }, { publishedAt: 'desc' }],
+        take: 6,
+      }),
+      prisma.article.findMany({
+        include: { category: { select: { id: true, name: true, slug: true, color: true } } },
+        orderBy: { publishedAt: 'desc' },
+        take: HOME_LATEST_COUNT,
+      }),
+      prisma.category.findMany({
+        include: {
+          articles: {
+            include: { category: { select: { id: true, name: true, slug: true, color: true } } },
+            orderBy: { publishedAt: 'desc' },
+            take: CATEGORY_PREVIEW_COUNT,
+          },
+        },
+        orderBy: { name: 'asc' },
+      }),
+    ])
 
-  return { todayPriority, latest, categories }
+    return { todayPriority, latest, categories }
+  } catch (error) {
+    console.error('Homepage DB error:', error)
+    return { todayPriority: [], latest: [], categories: [] }
+  }
 }
 
 function PriorityBadge({ priority }: { priority: number }) {

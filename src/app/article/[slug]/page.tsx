@@ -15,12 +15,16 @@ interface Props {
 }
 
 async function getArticle(slug: string) {
-  return prisma.article.findUnique({
-    where: { slug },
-    include: {
-      category: { select: { id: true, name: true, slug: true, color: true } },
-    },
-  })
+  try {
+    return await prisma.article.findUnique({
+      where: { slug },
+      include: {
+        category: { select: { id: true, name: true, slug: true, color: true } },
+      },
+    })
+  } catch {
+    return null
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -66,11 +70,11 @@ export default async function ArticlePage({ params }: Props) {
   const article = await getArticle(params.slug)
   if (!article) notFound()
 
-  // Increment views
-  await prisma.article.update({
+  // Increment views (fire and forget)
+  prisma.article.update({
     where: { id: article.id },
     data: { viewCount: { increment: 1 } },
-  })
+  }).catch(() => {})
 
   // Related articles
   const related = await prisma.article.findMany({
@@ -81,7 +85,7 @@ export default async function ArticlePage({ params }: Props) {
     include: { category: { select: { id: true, name: true, slug: true, color: true } } },
     orderBy: { publishedAt: 'desc' },
     take: RELATED_COUNT,
-  })
+  }).catch(() => [])
 
   const readTime = getReadTime(article.body)
   const paragraphs = article.body

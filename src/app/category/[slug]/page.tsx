@@ -15,10 +15,14 @@ interface Props {
 }
 
 async function getCategory(slug: string) {
-  return prisma.category.findUnique({
-    where: { slug },
-    include: { _count: { select: { articles: true } } },
-  })
+  try {
+    return await prisma.category.findUnique({
+      where: { slug },
+      include: { _count: { select: { articles: true } } },
+    })
+  } catch {
+    return null
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -50,8 +54,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       orderBy: { publishedAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
-    }),
-    prisma.article.count({ where: { category: { slug: params.slug } } }),
+    }).catch(() => []),
+    prisma.article.count({ where: { category: { slug: params.slug } } }).catch(() => 0),
   ])
 
   const pages = Math.ceil(total / limit)
