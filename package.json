@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node -e \"try{require('child_process').execSync('npx prisma db push --accept-data-loss',{stdio:'inherit'})}catch(e){console.log('DB push skipped:',e.message)}\" && next start",
+    "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
