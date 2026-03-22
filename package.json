@@ -3,10 +3,10 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "node --v8-pool-size=1 --max-old-space-size=256 server.js",
     "dev": "node server.js",
     "build": "npx prisma generate",
-    "postinstall": "prisma generate",
+    "postinstall": "npx prisma generate",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy"
