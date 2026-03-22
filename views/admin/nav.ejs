@@ -1,0 +1,22 @@
+<nav class="bg-brand-navy text-white shadow-lg">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-14">
+      <div class="flex items-center gap-6">
+        <a href="/admin" class="flex items-center gap-2 font-bold text-sm font-serif">
+          <img src="/logo.svg" alt="KKH" class="w-7 h-7 object-contain" onerror="this.style.display='none'"/>
+          <span class="hidden sm:inline">KKH Admin</span>
+        </a>
+        <div class="flex items-center gap-1">
+          <a href="/admin" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-white/10 transition-colors <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'bg-white/20' : '' %>">Dashboard</a>
+          <a href="/admin/upload" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-white/10 transition-colors <%= typeof activePage !== 'undefined' && activePage === 'upload' ? 'bg-white/20' : '' %>">Upload</a>
+          <a href="/admin/articles" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-white/10 transition-colors <%= typeof activePage !== 'undefined' && activePage === 'articles' ? 'bg-white/20' : '' %>">Articles</a>
+          <a href="/admin/history" class="px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-white/10 transition-colors <%= typeof activePage !== 'undefined' && activePage === 'history' ? 'bg-white/20' : '' %>">History</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/" target="_blank" class="text-xs text-white/60 hover:text-white transition-colors">← Site</a>
+        <a href="/admin/logout" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 transition-colors">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>

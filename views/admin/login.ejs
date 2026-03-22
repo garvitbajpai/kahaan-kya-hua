@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin Login — KKH</title>
+<link rel="icon" href="/logo.svg" type="image/svg+xml"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{'brand-red':'#DC2626','brand-navy':'#1A237E'}}}}</script>
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center">
+<div class="w-full max-w-md mx-auto px-4">
+  <div class="text-center mb-8">
+    <img src="/logo.svg" alt="KKH" class="w-16 h-16 mx-auto mb-3 object-contain" onerror="this.style.display='none'"/>
+    <h1 class="text-2xl font-bold text-white font-serif">कहाँ क्या हुआ</h1>
+    <p class="text-gray-400 text-sm mt-1">Admin Panel</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-2xl p-8">
+    <h2 class="text-xl font-bold text-gray-900 mb-6 text-center">Sign In</h2>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+      <%= error %>
+    </div>
+    <% } %>
+
+    <form method="POST" action="/admin/login<%= typeof redirect !== 'undefined' && redirect ? '?redirect=' + encodeURIComponent(redirect) : '' %>">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+        <input type="password" name="password" required autofocus
+          class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors"
+          placeholder="Enter admin password"/>
+      </div>
+      <button type="submit" class="w-full bg-brand-red text-white rounded-xl py-3 font-semibold hover:bg-red-700 transition-colors">
+        Login →
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-xs text-gray-400">
+      <a href="/" class="hover:text-brand-red transition-colors">← Back to site</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

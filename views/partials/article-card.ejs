@@ -1,0 +1,17 @@
+<article class="group bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden article-hover flex flex-col">
+  <div class="p-4 flex flex-col flex-1">
+    <div class="flex flex-wrap items-center gap-1.5 mb-2.5">
+      <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded text-white" style="background:<%= h.priorityBg(a.priority) %>"><%= h.priorityLabel(a.priority) %></span>
+      <span class="text-[10px] px-2 py-0.5 rounded text-white font-medium" style="background:<%= a.category.color || '#6B7280' %>"><%= a.category.name %></span>
+      <% if (a.isBreaking) { %><span class="text-[9px] font-black uppercase tracking-widest bg-red-600 text-white px-2 py-0.5 rounded animate-pulse">Breaking</span><% } %>
+    </div>
+    <a href="/article/<%= a.slug %>" class="flex-1">
+      <h3 class="font-serif text-sm font-bold leading-snug text-gray-900 group-hover:text-brand-red transition-colors line-clamp-3 mb-2"><%= a.headline %></h3>
+    </a>
+    <p class="text-gray-500 text-xs line-clamp-2 mb-3"><%= a.body.slice(0,120) %>…</p>
+    <div class="flex items-center justify-between text-xs text-gray-400 mt-auto">
+      <span><%= h.timeAgo(a.publishedAt) %></span>
+      <span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white <%= a.language === 'Hindi' ? 'bg-orange-600' : 'bg-blue-600' %>"><%= a.language === 'Hindi' ? 'हिं' : 'EN' %></span>
+    </div>
+  </div>
+</article>

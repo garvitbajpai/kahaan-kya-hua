@@ -1,0 +1,69 @@
+<!-- Breaking Ticker -->
+<% if (ticker && ticker.length > 0) { %>
+<div class="bg-brand-navy text-white text-xs py-1.5 overflow-hidden">
+  <div class="flex items-center">
+    <span class="bg-brand-red px-3 py-1 font-bold uppercase tracking-wider flex-shrink-0 mr-3">🔴 LIVE</span>
+    <div class="overflow-hidden flex-1">
+      <div class="whitespace-nowrap animate-marquee inline-block">
+        <% ticker.forEach(item => { %>
+          <a href="/article/<%= item.slug %>" class="hover:text-yellow-300 transition-colors mr-8">
+            ■ <%= item.headline %>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.animate-marquee { animation: marquee 40s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
+</style>
+<% } %>
+
+<!-- Top bar -->
+<div class="bg-gray-100 border-b border-gray-200 text-xs text-gray-500 py-1 px-4 flex justify-between items-center">
+  <span><%= new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) %></span>
+  <a href="/admin" class="hover:text-brand-red transition-colors">⚙ Admin</a>
+</div>
+
+<!-- Main header -->
+<header class="bg-white border-b-4 border-brand-red shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between py-3">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3">
+        <img src="/logo.svg" alt="KKH" class="w-10 h-10 object-contain" onerror="this.style.display='none'"/>
+        <div>
+          <div class="text-lg font-bold text-brand-navy font-serif leading-tight">कहाँ क्या हुआ</div>
+          <div class="text-[10px] text-gray-400 uppercase tracking-widest">KAHAAN KYA HUA</div>
+        </div>
+      </a>
+
+      <!-- Nav -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="/" class="text-gray-700 hover:text-brand-red transition-colors">Home</a>
+        <% if (typeof categories !== 'undefined') { categories.slice(0,5).forEach(cat => { %>
+        <a href="/category/<%= cat.slug %>" class="text-gray-700 hover:text-brand-red transition-colors"><%= cat.name %></a>
+        <% }) } %>
+      </nav>
+
+      <!-- Search -->
+      <form action="/search" method="GET" class="flex items-center gap-2">
+        <input type="search" name="q" placeholder="खोजें…" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:border-brand-red" value="<%= typeof q !== 'undefined' ? q : '' %>"/>
+        <button type="submit" class="bg-brand-red text-white rounded-lg px-3 py-1.5 text-sm hover:bg-red-700 transition-colors">🔍</button>
+      </form>
+    </div>
+
+    <!-- Category strip -->
+    <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+    <div class="flex gap-1 overflow-x-auto pb-2 scrollbar-hide">
+      <% categories.forEach(cat => { %>
+      <a href="/category/<%= cat.slug %>" class="flex-shrink-0 text-xs px-3 py-1 rounded-full text-white font-medium hover:opacity-80 transition-opacity" style="background:<%= cat.color || '#6B7280' %>">
+        <%= cat.name %>
+      </a>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</header>

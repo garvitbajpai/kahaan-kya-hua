@@ -1,0 +1,87 @@
+<%- include('../partials/head', { title: 'Admin Dashboard — KKH' }) %>
+
+<body class="bg-gray-100 text-gray-900 font-sans">
+<%- include('nav') %>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="text-2xl font-bold font-serif text-gray-900">Dashboard</h1>
+      <p class="text-gray-500 text-sm mt-1">कहाँ क्या हुआ — Admin Panel</p>
+    </div>
+    <a href="/admin/upload" class="bg-brand-red text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-red-700 transition-colors">+ Upload Excel</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+      <div class="text-3xl font-bold text-brand-navy font-serif"><%= stats.articleCount %></div>
+      <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Total Articles</div>
+    </div>
+    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+      <div class="text-3xl font-bold text-brand-navy font-serif"><%= stats.categoryCount %></div>
+      <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Categories</div>
+    </div>
+    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+      <div class="text-3xl font-bold text-orange-600 font-serif"><%= stats.hindiCount %></div>
+      <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">हिंदी Articles</div>
+    </div>
+    <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+      <div class="text-3xl font-bold text-blue-600 font-serif"><%= stats.uploadCount %></div>
+      <div class="text-xs text-gray-500 mt-1 uppercase tracking-wide">Uploads</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent uploads -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Recent Uploads</h2>
+        <a href="/admin/history" class="text-xs text-brand-red hover:underline">View all →</a>
+      </div>
+      <% if (recentUploads.length === 0) { %>
+      <p class="text-gray-400 text-sm text-center py-6">No uploads yet.</p>
+      <% } else { %>
+      <div class="space-y-3">
+        <% recentUploads.forEach(u => { %>
+        <div class="flex items-start justify-between gap-3 py-2 border-b border-gray-50 last:border-0">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-800 truncate"><%= u.filename %></p>
+            <p class="text-xs text-gray-400 mt-0.5">
+              <%= new Date(u.uploadedAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) %>
+              · <%= u.successCount %>/<%= u.totalRows %> rows
+            </p>
+          </div>
+          <span class="flex-shrink-0 text-[10px] font-bold uppercase px-2 py-0.5 rounded <%= u.status === 'success' ? 'bg-green-100 text-green-700' : u.status === 'partial' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700' %>"><%= u.status %></span>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Recent articles -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Recent Articles</h2>
+        <a href="/admin/articles" class="text-xs text-brand-red hover:underline">View all →</a>
+      </div>
+      <% if (recentArticles.length === 0) { %>
+      <p class="text-gray-400 text-sm text-center py-6">No articles yet.</p>
+      <% } else { %>
+      <div class="space-y-3">
+        <% recentArticles.forEach(a => { %>
+        <div class="flex items-start gap-3 py-2 border-b border-gray-50 last:border-0">
+          <span class="flex-shrink-0 text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white mt-0.5" style="background:<%= a.category.color || '#6B7280' %>"><%= a.category.name %></span>
+          <div class="flex-1 min-w-0">
+            <a href="/article/<%= a.slug %>" target="_blank" class="text-sm font-medium text-gray-800 hover:text-brand-red transition-colors line-clamp-2"><%= a.headline %></a>
+            <p class="text-xs text-gray-400 mt-0.5"><%= new Date(a.publishedAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) %> · <%= a.language %></p>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+</body></html>

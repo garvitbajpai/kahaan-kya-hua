@@ -1,0 +1,91 @@
+<%- include('../partials/head', { title: 'Upload Excel — KKH Admin' }) %>
+
+<body class="bg-gray-100 text-gray-900 font-sans">
+<%- include('nav', { activePage: 'upload' }) %>
+
+<div class="max-w-3xl mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold font-serif text-gray-900">Upload Excel File</h1>
+    <p class="text-gray-500 text-sm mt-1">Upload .xlsx or .xls file with news articles</p>
+  </div>
+
+  <% if (typeof flash !== 'undefined' && flash) { %>
+  <div class="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"><%= flash %></div>
+  <% } %>
+
+  <!-- Format guide -->
+  <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
+    <h2 class="text-sm font-bold text-blue-800 mb-3">Required Excel Format</h2>
+    <div class="overflow-x-auto">
+      <table class="text-xs w-full border-collapse">
+        <thead>
+          <tr class="bg-blue-100">
+            <th class="border border-blue-200 px-3 py-1.5 text-left text-blue-800 font-semibold">Date</th>
+            <th class="border border-blue-200 px-3 py-1.5 text-left text-blue-800 font-semibold">Headline</th>
+            <th class="border border-blue-200 px-3 py-1.5 text-left text-blue-800 font-semibold">News</th>
+            <th class="border border-blue-200 px-3 py-1.5 text-left text-blue-800 font-semibold">Category</th>
+            <th class="border border-blue-200 px-3 py-1.5 text-left text-blue-800 font-semibold">Language</th>
+            <th class="border border-blue-200 px-3 py-1.5 text-left text-blue-800 font-semibold">Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-white">
+            <td class="border border-blue-200 px-3 py-1.5 text-gray-600">2024-01-15</td>
+            <td class="border border-blue-200 px-3 py-1.5 text-gray-600">Sample Headline</td>
+            <td class="border border-blue-200 px-3 py-1.5 text-gray-600">Article body text…</td>
+            <td class="border border-blue-200 px-3 py-1.5 text-gray-600">Politics</td>
+            <td class="border border-blue-200 px-3 py-1.5 text-gray-600">Hindi / English</td>
+            <td class="border border-blue-200 px-3 py-1.5 text-gray-600">1–4</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-blue-700 mt-2">* Date, Headline (or Title), News (or Body/Content), and Category are required. Language and Priority are optional.</p>
+  </div>
+
+  <!-- Upload form -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <form method="POST" action="/admin/upload" enctype="multipart/form-data" id="uploadForm">
+      <div class="border-2 border-dashed border-gray-200 rounded-xl p-10 text-center hover:border-brand-red transition-colors cursor-pointer" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="text-5xl mb-3">📊</div>
+        <p class="text-gray-700 font-medium mb-1">Click to select or drag & drop</p>
+        <p class="text-gray-400 text-sm">Excel files only (.xlsx, .xls) · Max 10MB</p>
+        <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" class="hidden" onchange="handleFileSelect(this)"/>
+      </div>
+      <div id="fileInfo" class="hidden mt-4 px-4 py-3 bg-gray-50 rounded-xl">
+        <p class="text-sm font-medium text-gray-700" id="fileName"></p>
+        <p class="text-xs text-gray-400" id="fileSize"></p>
+      </div>
+      <div class="mt-6 flex gap-3">
+        <button type="submit" name="action" value="preview" id="previewBtn"
+          class="flex-1 bg-brand-navy text-white py-3 rounded-xl font-semibold hover:bg-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          Preview Upload
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function handleFileSelect(input) {
+  if (input.files.length > 0) {
+    const file = input.files[0]
+    document.getElementById('fileInfo').classList.remove('hidden')
+    document.getElementById('fileName').textContent = file.name
+    document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(1) + ' KB'
+    document.getElementById('dropZone').classList.add('border-brand-red', 'bg-red-50')
+  }
+}
+const dz = document.getElementById('dropZone')
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('border-brand-red', 'bg-red-50') })
+dz.addEventListener('dragleave', () => dz.classList.remove('border-brand-red', 'bg-red-50'))
+dz.addEventListener('drop', e => {
+  e.preventDefault()
+  const files = e.dataTransfer.files
+  if (files.length > 0) {
+    document.getElementById('fileInput').files = files
+    handleFileSelect(document.getElementById('fileInput'))
+  }
+})
+</script>
+</body></html>

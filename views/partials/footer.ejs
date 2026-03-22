@@ -1,0 +1,33 @@
+<footer class="bg-brand-navy text-white mt-12">
+  <div class="max-w-7xl mx-auto px-4 py-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <img src="/logo.svg" alt="KKH" class="w-8 h-8 object-contain" onerror="this.style.display='none'"/>
+          <span class="font-bold font-serif text-lg">कहाँ क्या हुआ</span>
+        </div>
+        <p class="text-blue-200 text-sm leading-relaxed">भारत और दुनिया की ताज़ा खबरें।<br>Breaking news in Hindi & English.</p>
+      </div>
+      <div>
+        <h3 class="font-bold mb-3 text-sm uppercase tracking-widest text-blue-300">Categories</h3>
+        <ul class="space-y-1">
+          <% if (typeof categories !== 'undefined') { categories.slice(0,6).forEach(cat => { %>
+          <li><a href="/category/<%= cat.slug %>" class="text-blue-200 hover:text-white text-sm transition-colors"><%= cat.name %></a></li>
+          <% }) } %>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold mb-3 text-sm uppercase tracking-widest text-blue-300">Quick Links</h3>
+        <ul class="space-y-1 text-sm text-blue-200">
+          <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
+          <li><a href="/search" class="hover:text-white transition-colors">Search</a></li>
+          <li><a href="/admin" class="hover:text-white transition-colors">Admin Panel</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-6 text-center text-xs text-blue-300">
+      © <%= new Date().getFullYear() %> Kahaan Kya Hua (कहाँ क्या हुआ). All rights reserved.
+    </div>
+  </div>
+</footer>
+</body></html>

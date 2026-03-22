@@ -1,0 +1,218 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/header', { ticker, categories, q: '' }) %>
+
+<div class="bg-gray-50 min-h-screen">
+
+<% if (latest.length === 0) { %>
+<!-- Empty state -->
+<div class="max-w-2xl mx-auto px-4 py-20 text-center">
+  <div class="text-7xl mb-4">📰</div>
+  <h1 class="text-4xl font-serif font-bold text-gray-900 mb-2">कहाँ क्या हुआ</h1>
+  <p class="text-gray-400 text-lg mb-2">Kahaan Kya Hua</p>
+  <p class="text-gray-500 mb-8">अभी तक कोई खबर नहीं। Admin panel पर जाकर अपनी पहली Excel file upload करें।</p>
+  <a href="/admin/upload" class="inline-flex items-center gap-2 px-8 py-4 bg-brand-red text-white rounded-xl font-semibold text-lg hover:bg-red-700 transition-colors shadow-lg">
+    Upload Excel File →
+  </a>
+</div>
+<% } else { %>
+
+<!-- ══ TODAY'S PRIORITY ══ -->
+<% if (priority1 || priority2s.length > 0 || priority34s.length > 0) { %>
+<section class="bg-white border-b-4 border-brand-red">
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="flex items-center gap-2 bg-brand-red text-white px-4 py-1.5 rounded-full">
+        <span class="w-2 h-2 bg-white rounded-full animate-pulse inline-block"></span>
+        <span class="text-xs font-black uppercase tracking-widest">आज की मुख्य खबरें</span>
+      </div>
+      <span class="text-xs text-gray-400 font-medium uppercase tracking-wider">Today's Priority News</span>
+    </div>
+
+    <!-- Priority 1 Hero -->
+    <% if (priority1) { %>
+    <div class="mb-6">
+      <article class="group relative rounded-2xl overflow-hidden text-white article-hover" style="background:linear-gradient(135deg,#1A237E,#0D0D0D);min-height:400px">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+        <div class="relative p-6 md:p-10 flex flex-col justify-end" style="min-height:400px">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded" style="background:<%= h.priorityBg(1) %>">TOP STORY</span>
+            <span class="text-xs px-2 py-0.5 rounded font-medium" style="background:<%= priority1.category.color || '#6B7280' %>"><%= priority1.category.name %></span>
+            <% if (priority1.isBreaking) { %><span class="text-[9px] font-black uppercase tracking-widest bg-red-600 text-white px-2 py-0.5 rounded animate-pulse">ब्रेकिंग</span><% } %>
+          </div>
+          <a href="/article/<%= priority1.slug %>">
+            <h1 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold leading-tight hover:text-yellow-400 transition-colors mb-4 max-w-4xl"><%= priority1.headline %></h1>
+          </a>
+          <p class="text-gray-300 text-sm md:text-base line-clamp-2 mb-4 max-w-3xl"><%= priority1.body.slice(0,240) %>…</p>
+          <div class="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+            <span><%= h.formatDate(priority1.publishedAt) %></span>
+            <span>·</span><span><%= h.getReadTime(priority1.body) %> min read</span>
+            <span class="px-2 py-0.5 rounded text-white text-[10px] font-bold <%= priority1.language === 'Hindi' ? 'bg-orange-600' : 'bg-blue-600' %>"><%= priority1.language === 'Hindi' ? 'हिंदी' : 'English' %></span>
+          </div>
+        </div>
+      </article>
+    </div>
+    <% } %>
+
+    <!-- Priority 2 -->
+    <% if (priority2s.length > 0) { %>
+    <div class="grid gap-4 mb-6 <%= priority2s.length === 1 ? '' : 'md:grid-cols-2' %>">
+      <% priority2s.forEach(a => { %>
+      <article class="group relative rounded-xl overflow-hidden text-white article-hover" style="background:linear-gradient(135deg,#B71C1C,#37474F);min-height:240px">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        <div class="relative p-5 flex flex-col justify-end" style="min-height:240px">
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded" style="background:<%= h.priorityBg(2) %>">FEATURED</span>
+            <span class="text-xs px-2 py-0.5 rounded font-medium" style="background:<%= a.category.color || '#6B7280' %>"><%= a.category.name %></span>
+          </div>
+          <a href="/article/<%= a.slug %>"><h2 class="font-serif text-xl font-bold leading-tight hover:text-yellow-400 transition-colors mb-2 line-clamp-3"><%= a.headline %></h2></a>
+          <p class="text-gray-300 text-sm line-clamp-2 mb-3"><%= a.body.slice(0,150) %>…</p>
+          <div class="flex items-center gap-3 text-xs text-gray-400">
+            <span><%= h.timeAgo(a.publishedAt) %></span>
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold <%= a.language === 'Hindi' ? 'bg-orange-600' : 'bg-blue-600' %>"><%= a.language === 'Hindi' ? 'हिं' : 'EN' %></span>
+          </div>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <!-- Priority 3-4 -->
+    <% if (priority34s.length > 0) { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <% priority34s.forEach(a => { %>
+      <article class="group bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 text-white article-hover border border-gray-700">
+        <div class="flex items-center gap-2 mb-2.5">
+          <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded" style="background:<%= h.priorityBg(a.priority) %>"><%= h.priorityLabel(a.priority) %></span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded" style="background:<%= a.category.color || '#6B7280' %>"><%= a.category.name %></span>
+        </div>
+        <a href="/article/<%= a.slug %>"><h3 class="font-serif text-sm font-bold leading-snug hover:text-yellow-400 transition-colors line-clamp-3 mb-2"><%= a.headline %></h3></a>
+        <div class="flex items-center gap-2 text-xs text-gray-400">
+          <span><%= h.timeAgo(a.publishedAt) %></span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold <%= a.language === 'Hindi' ? 'bg-orange-600' : 'bg-blue-600' %>"><%= a.language === 'Hindi' ? 'हिं' : 'EN' %></span>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</section>
+<% } %>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <!-- Hero + side latest (when no priority1) -->
+  <% if (heroArticle && !priority1) { %>
+  <section class="mb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <article class="group relative rounded-2xl overflow-hidden text-white article-hover" style="background:linear-gradient(135deg,#1A237E,#0D0D0D);min-height:360px">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10"></div>
+          <div class="relative p-6 md:p-8 flex flex-col justify-end" style="min-height:360px">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <% if (heroArticle.isBreaking) { %><span class="text-[10px] font-bold uppercase tracking-wider bg-brand-red text-white px-2 py-0.5 rounded animate-pulse">Breaking</span><% } %>
+              <span class="text-xs px-2 py-0.5 rounded text-white font-medium" style="background:<%= heroArticle.category.color || '#6B7280' %>"><%= heroArticle.category.name %></span>
+            </div>
+            <a href="/article/<%= heroArticle.slug %>"><h1 class="font-serif text-2xl md:text-3xl font-bold leading-tight hover:text-yellow-400 transition-colors mb-3"><%= heroArticle.headline %></h1></a>
+            <p class="text-gray-300 text-sm line-clamp-2 mb-4"><%= heroArticle.body.slice(0,200) %>…</p>
+            <div class="flex items-center gap-3 text-xs text-gray-400">
+              <span><%= h.formatDate(heroArticle.publishedAt) %></span>
+              <span>·</span><span><%= h.getReadTime(heroArticle.body) %> min read</span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <h2 class="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 mb-4">
+          <span class="w-2 h-2 bg-brand-red rounded-full inline-block animate-pulse"></span> ताज़ा खबरें
+        </h2>
+        <% sideLatest.forEach(a => { %>
+        <%- include('partials/article-row', { a, h }) %>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <!-- When priority1 showed, show latest grid -->
+  <% if (priority1) { %>
+  <section class="mb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-1 h-6 bg-brand-red rounded-full"></div>
+          <h2 class="text-xl font-serif font-bold text-gray-900">Latest News</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <% gridArticles.slice(0,4).forEach(a => { %><%- include('partials/article-card', { a, h }) %><% }) %>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <h2 class="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 mb-4">
+          <span class="w-2 h-2 bg-brand-red rounded-full inline-block animate-pulse"></span> ताज़ा अपडेट
+        </h2>
+        <% sideLatest.forEach(a => { %><%- include('partials/article-row', { a, h }) %><% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <!-- More articles grid -->
+  <% if (gridArticles.length > 4) { %>
+  <section class="mb-12">
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-1 h-6 bg-brand-red rounded-full"></div>
+      <h2 class="text-xl font-serif font-bold text-gray-900">और खबरें</h2>
+      <span class="text-sm text-gray-400">More Stories</span>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <% gridArticles.slice(priority1 ? 4 : 0).forEach(a => { %><%- include('partials/article-card', { a, h }) %><% }) %>
+    </div>
+  </section>
+  <% } %>
+
+  <!-- Category sections -->
+  <% if (categorySections.some(c => c.articles.length > 0)) { %>
+  <div class="relative mb-12">
+    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+    <div class="relative flex justify-center"><span class="bg-gray-50 px-4 text-xs text-gray-400 uppercase tracking-widest font-semibold">Category Coverage</span></div>
+  </div>
+  <% categorySections.filter(c => c.articles.length > 0).forEach(cat => { %>
+  <section class="mb-10">
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-1 h-6 rounded-full" style="background:<%= cat.color || '#DC2626' %>"></div>
+        <h2 class="text-xl font-serif font-bold text-gray-900"><%= cat.name %></h2>
+      </div>
+      <a href="/category/<%= cat.slug %>" class="text-sm font-medium hover:text-brand-red transition-colors text-gray-500">All <%= cat.name %> →</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <% cat.articles.forEach(a => { %><%- include('partials/article-card', { a, h }) %><% }) %>
+    </div>
+  </section>
+  <% }) %>
+  <% } %>
+
+  <!-- Stats bar -->
+  <div class="mt-12 rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#1A237E,#0D0D0D)">
+    <div class="p-8 text-white">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <h2 class="text-2xl font-serif font-bold mb-1">कहाँ क्या हुआ</h2>
+          <p class="text-blue-200 text-sm">भारत की विश्वसनीय खबर — Trusted News of India</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div><div class="text-3xl font-bold font-serif text-yellow-400"><%= stats.articleCount %></div><div class="text-xs text-blue-300 mt-1 uppercase tracking-wide">Articles</div></div>
+          <div><div class="text-3xl font-bold font-serif text-yellow-400"><%= stats.categoryCount %></div><div class="text-xs text-blue-300 mt-1 uppercase tracking-wide">Categories</div></div>
+          <div><div class="text-3xl font-bold font-serif text-yellow-400"><%= stats.hindiCount %></div><div class="text-xs text-blue-300 mt-1 uppercase tracking-wide">हिंदी खबरें</div></div>
+          <div><div class="text-3xl font-bold font-serif text-yellow-400"><%= stats.uploadCount %></div><div class="text-xs text-blue-300 mt-1 uppercase tracking-wide">Daily Uploads</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<% } %>
+</div>
+
+<%- include('partials/footer', { categories }) %>
