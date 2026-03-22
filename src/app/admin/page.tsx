@@ -5,40 +5,44 @@ import { formatDateShort } from '@/lib/slug'
 export const dynamic = 'force-dynamic'
 
 async function getDashboardStats() {
-  const [
-    totalArticles,
-    totalCategories,
-    totalUploads,
-    recentUploads,
-    recentArticles,
-    topCategories,
-  ] = await Promise.all([
-    prisma.article.count(),
-    prisma.category.count(),
-    prisma.uploadHistory.count(),
-    prisma.uploadHistory.findMany({
+  try {
+    // Sequential queries to avoid connection pool exhaustion on shared hosting
+    const totalArticles = await prisma.article.count()
+    const totalCategories = await prisma.category.count()
+    const totalUploads = await prisma.uploadHistory.count()
+    const recentUploads = await prisma.uploadHistory.findMany({
       orderBy: { uploadedAt: 'desc' },
       take: 5,
-    }),
-    prisma.article.findMany({
+    })
+    const recentArticles = await prisma.article.findMany({
       include: { category: { select: { name: true, color: true } } },
       orderBy: { createdAt: 'desc' },
       take: 8,
-    }),
-    prisma.category.findMany({
+    })
+    const topCategories = await prisma.category.findMany({
       include: { _count: { select: { articles: true } } },
       orderBy: { articles: { _count: 'desc' } },
       take: 5,
-    }),
-  ])
+    })
 
-  return {
-    totalArticles,
-    totalCategories,
-    totalUploads,
-    recentUploads,
-    recentArticles,
-    topCategories,
+    return {
+      totalArticles,
+      totalCategories,
+      totalUploads,
+      recentUploads,
+      recentArticles,
+      topCategories,
+    }
+  } catch (error) {
+    console.error('Dashboard DB error:', error)
+    return {
+      totalArticles: 0,
+      totalCategories: 0,
+      totalUploads: 0,
+      recentUploads: [],
+      recentArticles: [],
+      topCategories: [],
+    }
   }
 }
 

@@ -25,37 +25,50 @@ async function getHomeData() {
   try {
     const { start, end } = getTodayRange()
 
-    const [todayPriority, latest, categories] = await Promise.all([
-      prisma.article.findMany({
-        where: {
-          priority: { not: null },
-          publishedAt: { gte: start, lte: end },
+    // Sequential queries to avoid connection pool exhaustion on shared hosting
+    const todayPriority = await prisma.article.findMany({
+      where: {
+        priority: { not: null },
+        publishedAt: { gte: start, lte: end },
+      },
+      include: { category: { select: { id: true, name: true, slug: true, color: true } } },
+      orderBy: [{ priority: 'asc' }, { publishedAt: 'desc' }],
+      take: 6,
+    })
+
+    const latest = await prisma.article.findMany({
+      include: { category: { select: { id: true, name: true, slug: true, color: true } } },
+      orderBy: { publishedAt: 'desc' },
+      take: HOME_LATEST_COUNT,
+    })
+
+    const categories = await prisma.category.findMany({
+      include: {
+        articles: {
+          include: { category: { select: { id: true, name: true, slug: true, color: true } } },
+          orderBy: { publishedAt: 'desc' },
+          take: CATEGORY_PREVIEW_COUNT,
         },
-        include: { category: { select: { id: true, name: true, slug: true, color: true } } },
-        orderBy: [{ priority: 'asc' }, { publishedAt: 'desc' }],
-        take: 6,
-      }),
-      prisma.article.findMany({
-        include: { category: { select: { id: true, name: true, slug: true, color: true } } },
-        orderBy: { publishedAt: 'desc' },
-        take: HOME_LATEST_COUNT,
-      }),
-      prisma.category.findMany({
-        include: {
-          articles: {
-            include: { category: { select: { id: true, name: true, slug: true, color: true } } },
-            orderBy: { publishedAt: 'desc' },
-            take: CATEGORY_PREVIEW_COUNT,
-          },
-        },
-        orderBy: { name: 'asc' },
-      }),
-    ])
+      },
+      orderBy: { name: 'asc' },
+    })
 
     return { todayPriority, latest, categories }
   } catch (error) {
     console.error('Homepage DB error:', error)
     return { todayPriority: [], latest: [], categories: [] }
+  }
+}
+
+async function getStats() {
+  try {
+    const articleCount = await prisma.article.count()
+    const categoryCount = await prisma.category.count()
+    const hindiCount = await prisma.article.count({ where: { language: 'Hindi' } })
+    const uploadCount = await prisma.uploadHistory.count()
+    return { articleCount, categoryCount, hindiCount, uploadCount }
+  } catch {
+    return { articleCount: 0, categoryCount: 0, hindiCount: 0, uploadCount: 0 }
   }
 }
 
@@ -76,6 +89,7 @@ function PriorityBadge({ priority }: { priority: number }) {
 
 export default async function HomePage() {
   const { todayPriority, latest, categories } = await getHomeData()
+  const stats = await getStats()
 
   const priority1 = todayPriority.find((a) => a.priority === 1)
   const priority2s = todayPriority.filter((a) => a.priority === 2)
@@ -387,25 +401,25 @@ export default async function HomePage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
                   <div className="text-3xl font-bold font-serif text-brand-gold">
-                    {await prisma.article.count()}
+                    {stats.articleCount}
                   </div>
                   <div className="text-xs text-blue-300 mt-1 uppercase tracking-wide">Articles</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold font-serif text-brand-gold">
-                    {await prisma.category.count()}
+                    {stats.categoryCount}
                   </div>
                   <div className="text-xs text-blue-300 mt-1 uppercase tracking-wide">Categories</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold font-serif text-brand-gold">
-                    {await prisma.article.count({ where: { language: 'Hindi' } })}
+                    {stats.hindiCount}
                   </div>
                   <div className="text-xs text-blue-300 mt-1 uppercase tracking-wide">हिंदी खबरें</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold font-serif text-brand-gold">
-                    {await prisma.uploadHistory.count()}
+                    {stats.uploadCount}
                   </div>
                   <div className="text-xs text-blue-300 mt-1 uppercase tracking-wide">Daily Uploads</div>
                 </div>
