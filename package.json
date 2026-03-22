@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "start": "sleep 5 && node --v8-pool-size=1 --max-old-space-size=256 server.js",
+    "start": "/opt/alt/alt-nodejs20/root/bin/node --v8-pool-size=1 --max-old-space-size=256 server.js",
     "dev": "node server.js",
     "build": "npx prisma generate",
     "postinstall": "npx prisma generate",

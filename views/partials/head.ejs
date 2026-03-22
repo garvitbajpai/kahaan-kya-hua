@@ -19,6 +19,11 @@ tailwind.config = {
   .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .line-clamp-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .article-hover:hover{transform:translateY(-2px);transition:transform .2s}
+  .scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none;}
+  .scrollbar-hide::-webkit-scrollbar{display:none;}
+  @media(max-width:768px){
+    .prose p{font-size:1rem!important;line-height:1.7!important;}
+  }
 </style>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">

@@ -22,7 +22,7 @@
 <% } %>
 
 <!-- Top bar -->
-<div class="bg-gray-100 border-b border-gray-200 text-xs text-gray-500 py-1 px-4 flex justify-between items-center">
+<div class="bg-gray-100 border-b border-gray-200 text-xs text-gray-500 py-1 px-4 hidden sm:flex justify-between items-center">
   <span><%= new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) %></span>
   <a href="/admin" class="hover:text-brand-red transition-colors">⚙ Admin</a>
 </div>
@@ -30,28 +30,52 @@
 <!-- Main header -->
 <header class="bg-white border-b-4 border-brand-red shadow-sm sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4">
-    <div class="flex items-center justify-between py-3">
+    <div class="flex items-center justify-between py-3 gap-3">
+
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-3">
-        <img src="/logo.svg" alt="KKH" class="w-10 h-10 object-contain" onerror="this.style.display='none'"/>
+      <a href="/" class="flex items-center gap-2 flex-shrink-0">
+        <img src="/logo.svg" alt="KKH" class="w-9 h-9 object-contain" onerror="this.style.display='none'"/>
         <div>
-          <div class="text-lg font-bold text-brand-navy font-serif leading-tight">कहाँ क्या हुआ</div>
-          <div class="text-[10px] text-gray-400 uppercase tracking-widest">KAHAAN KYA HUA</div>
+          <div class="text-base sm:text-lg font-bold text-brand-navy font-serif leading-tight">कहाँ क्या हुआ</div>
+          <div class="text-[9px] text-gray-400 uppercase tracking-widest hidden sm:block">KAHAAN KYA HUA</div>
         </div>
       </a>
 
-      <!-- Nav -->
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium flex-1 justify-center">
         <a href="/" class="text-gray-700 hover:text-brand-red transition-colors">Home</a>
         <% if (typeof categories !== 'undefined') { categories.slice(0,5).forEach(cat => { %>
         <a href="/category/<%= cat.slug %>" class="text-gray-700 hover:text-brand-red transition-colors"><%= cat.name %></a>
         <% }) } %>
       </nav>
 
-      <!-- Search -->
-      <form action="/search" method="GET" class="flex items-center gap-2">
-        <input type="search" name="q" placeholder="खोजें…" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:border-brand-red" value="<%= typeof q !== 'undefined' ? q : '' %>"/>
-        <button type="submit" class="bg-brand-red text-white rounded-lg px-3 py-1.5 text-sm hover:bg-red-700 transition-colors">🔍</button>
+      <!-- Right side: Search (desktop) + Hamburger (mobile) -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Desktop Search -->
+        <form action="/search" method="GET" class="hidden md:flex items-center gap-2">
+          <input type="search" name="q" placeholder="खोजें…" class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-40 focus:outline-none focus:border-brand-red" value="<%= typeof q !== 'undefined' ? q : '' %>"/>
+          <button type="submit" class="bg-brand-red text-white rounded-lg px-3 py-1.5 text-sm hover:bg-red-700 transition-colors">🔍</button>
+        </form>
+
+        <!-- Mobile Search Icon -->
+        <button id="mobile-search-btn" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-brand-red hover:text-brand-red transition-colors" aria-label="Search">
+          🔍
+        </button>
+
+        <!-- Mobile Hamburger -->
+        <button id="mobile-menu-btn" class="md:hidden w-9 h-9 flex flex-col justify-center items-center gap-1.5 rounded-lg border border-gray-200 hover:border-brand-red transition-colors" aria-label="Menu">
+          <span class="w-5 h-0.5 bg-gray-700 rounded transition-all"></span>
+          <span class="w-5 h-0.5 bg-gray-700 rounded transition-all"></span>
+          <span class="w-4 h-0.5 bg-gray-700 rounded transition-all"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Search Bar (hidden by default) -->
+    <div id="mobile-search-bar" class="hidden md:hidden pb-3">
+      <form action="/search" method="GET" class="flex gap-2">
+        <input type="search" name="q" placeholder="खबर खोजें…" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-red" value="<%= typeof q !== 'undefined' ? q : '' %>"/>
+        <button type="submit" class="bg-brand-red text-white rounded-lg px-4 py-2 text-sm hover:bg-red-700 transition-colors">🔍</button>
       </form>
     </div>
 
@@ -67,3 +91,77 @@
     <% } %>
   </div>
 </header>
+
+<!-- Mobile Full-Screen Menu -->
+<div id="mobile-menu" class="fixed inset-0 z-[60] hidden">
+  <!-- Backdrop -->
+  <div id="mobile-menu-backdrop" class="absolute inset-0 bg-black/50"></div>
+
+  <!-- Slide-in panel -->
+  <div class="absolute top-0 right-0 bottom-0 w-72 bg-white shadow-2xl flex flex-col overflow-y-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-brand-navy text-white flex-shrink-0">
+      <a href="/" class="flex items-center gap-2" onclick="document.getElementById('mobile-menu').classList.add('hidden')">
+        <img src="/logo.svg" alt="KKH" class="w-8 h-8 object-contain" onerror="this.style.display='none'"/>
+        <span class="font-bold font-serif">कहाँ क्या हुआ</span>
+      </a>
+      <button id="mobile-menu-close" class="text-white/80 hover:text-white text-2xl leading-none" aria-label="Close">✕</button>
+    </div>
+
+    <!-- Search -->
+    <div class="px-5 py-4 border-b border-gray-100 flex-shrink-0">
+      <form action="/search" method="GET" class="flex gap-2">
+        <input type="search" name="q" placeholder="खबर खोजें…" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-red text-gray-900"/>
+        <button type="submit" class="bg-brand-red text-white rounded-lg px-4 py-2 text-sm hover:bg-red-700">🔍</button>
+      </form>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 px-5 py-3">
+      <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Navigation</p>
+      <a href="/" class="flex items-center gap-3 py-3 border-b border-gray-50 text-gray-800 font-medium hover:text-brand-red transition-colors" onclick="document.getElementById('mobile-menu').classList.add('hidden')">
+        <span class="text-lg">🏠</span> Home
+      </a>
+
+      <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+      <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 mt-5">Categories</p>
+      <% categories.forEach(cat => { %>
+      <a href="/category/<%= cat.slug %>" class="flex items-center gap-3 py-3 border-b border-gray-50 text-gray-700 hover:text-brand-red transition-colors" onclick="document.getElementById('mobile-menu').classList.add('hidden')">
+        <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:<%= cat.color || '#6B7280' %>"></span>
+        <span class="font-medium"><%= cat.name %></span>
+      </a>
+      <% }) } %>
+    </nav>
+
+    <!-- Footer -->
+    <div class="px-5 py-4 border-t border-gray-100 flex-shrink-0 bg-gray-50">
+      <a href="/admin" class="flex items-center gap-2 text-sm text-gray-500 hover:text-brand-red transition-colors">
+        <span>⚙</span> Admin Panel
+      </a>
+      <p class="text-xs text-gray-400 mt-2"><%= new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) %></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var btn   = document.getElementById('mobile-menu-btn');
+  var menu  = document.getElementById('mobile-menu');
+  var close = document.getElementById('mobile-menu-close');
+  var back  = document.getElementById('mobile-menu-backdrop');
+  var srchBtn = document.getElementById('mobile-search-btn');
+  var srchBar = document.getElementById('mobile-search-bar');
+
+  function openMenu(){ menu.classList.remove('hidden'); document.body.style.overflow='hidden'; }
+  function closeMenu(){ menu.classList.add('hidden'); document.body.style.overflow=''; }
+
+  btn.addEventListener('click', openMenu);
+  close.addEventListener('click', closeMenu);
+  back.addEventListener('click', closeMenu);
+
+  srchBtn.addEventListener('click', function(){
+    srchBar.classList.toggle('hidden');
+    if(!srchBar.classList.contains('hidden')) srchBar.querySelector('input').focus();
+  });
+})();
+</script>
